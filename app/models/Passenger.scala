@@ -1,5 +1,5 @@
 package models
 
-class Passenger(id: Int, destination: String) {
+class Passenger(val id: Int, val destination: String) {
 
 }
