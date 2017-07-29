@@ -7,33 +7,33 @@ import scala.io.Source
 class Schedule {
 
   // { carId => { departureTime, CarStop } }
-  val schedule: Map[Int, Map[String, CarStop]] = Map[Int, Map[String, CarStop]]()
-
-  class CarStop(carId: Int, maxCapacity: Int, time: String, departure: String, destination: String) {
-
-  }
+  val schedule: mutable.Map[Int, mutable.Map[String, CarStop]] =
+    mutable.Map[Int, mutable.Map[String, CarStop]]().withDefaultValue(mutable.Map[String, CarStop]())
 
   def addCarStop(carId: Int, maxCapacity: Int, time: String, departure: String, destination: String): Unit = {
-
     val stop = new CarStop(carId, maxCapacity, time, departure, destination)
-    // ToDo: add this to schedule data structure
+    schedule(carId).put(time, stop)
+  }
 
+  def getCarStop(car: Car, time: String): CarStop = {
+    schedule(car.id)(time)
   }
 
   def readSchedule() {
 
     val rows = ArrayBuffer[Array[String]]()
-    using(Source.fromFile("/Users/jorgegrajales/Repos/transmi-metro/data/schedules.csv")) { source =>
+    using(Source.fromFile("./data/schedules.csv")) { source =>
       for (line <- source.getLines.drop(1)) {
         rows += line.split(",").map(_.trim)
       }
     }
+
     for (row <- rows) {
-      var carId = row(0).toInt
-      var maxCapacity = row(1).toInt
-      var time = row(3)
-      var departure = row(4)
-      var destination = row(1)
+      val carId = row(0).toInt
+      val maxCapacity = row(1).toInt
+      val time = row(3)
+      val departure = row(4)
+      val destination = row(1)
       addCarStop(carId, maxCapacity, time, departure, destination)
     }
 
@@ -45,4 +45,8 @@ class Schedule {
       }
 
   }
+
+}
+
+class CarStop(var carId: Int, var maxCapacity: Int, var time: String, var departure: String, var destination: String) {
 }
