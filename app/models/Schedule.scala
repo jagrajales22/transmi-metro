@@ -10,7 +10,7 @@ class Schedule {
   val schedule: mutable.Map[Int, mutable.Map[String, CarItinerary]] =
     mutable.Map[Int, mutable.Map[String, CarItinerary]]().withDefaultValue(mutable.Map[String, CarItinerary]())
 
-  def readSchedule(): Schedule = {
+  def readSchedule(): mutable.Map[Int, mutable.Map[String, CarItinerary]] = {
 
     val rows = ArrayBuffer[Array[String]]()
     using(Source.fromFile(TransmiMetro.DATA_PATH + "schedules.csv")) { source =>
@@ -28,7 +28,7 @@ class Schedule {
       addCarItinerary(carId, maxCapacity, time, departure, destination)
     }
 
-    this
+    schedule
 
   }
 
