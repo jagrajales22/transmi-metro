@@ -12,7 +12,7 @@ class TransmiMetro {
 
   val stations: Seq[Station] =
     Seq[Station](
-      new Station("Portal americas", true, this),
+      new Station("Portal Americas", true, this),
       new Station("Calle 42 sur", false, this),
       new Station("Carrera 80", false, this),
       new Station("Kennedy", false, this),
