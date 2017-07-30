@@ -8,6 +8,10 @@ object TransmiMetro {
 
 class TransmiMetro {
 
+  // { time => { station, [cars] } }
+  val cars: mutable.Map[String, mutable.Map[String, mutable.Seq[Car]]] =
+    loadCars()
+
   // { time => { station => [passengers] } }
   val passengers: mutable.Map[String, mutable.Map[String, mutable.Seq[Passenger]]] =
     loadPassengers()
@@ -15,9 +19,6 @@ class TransmiMetro {
   // { time => { station => { arrivals: n, departures: m } } }
   val log: mutable.Map[String, mutable.Map[String, mutable.Map[String, Int]]] =
     mutable.Map[String, mutable.Map[String, mutable.Map[String, Int]]]()
-
-  // { car_id => { time, itinerary } }
-  val schedule: Schedule = new Schedule().readSchedule()
 
   // list of available stations
   val stations: Seq[Station] =
@@ -39,10 +40,6 @@ class TransmiMetro {
       new Station("Calle 72", true, this),
     )
 
-  def getCarStop(car: Car, time: String): CarItinerary = {
-    schedule.getCarStop(car, time)
-  }
-
   def log(time: String, station: String, stat: String, num: Int): Unit = {
     if (!log.contains(time))
       log.put(time, mutable.Map[String, mutable.Map[String, Int]]())
@@ -53,6 +50,26 @@ class TransmiMetro {
   }
 
   // private helpers
+
+  private def loadCars(): mutable.Map[String, mutable.Map[String, mutable.Seq[Car]]] = {
+
+    val schedule: Schedule = new Schedule().readSchedule()
+    val data = mutable.Map[String, mutable.Map[String, mutable.Seq[Car]]]()
+
+    for ((carId: Int, record: Map[String, CarItinerary]) <- schedule) {
+      for ((time: String, itinerary: CarItinerary) <- record) {
+        val stName = itinerary.departure
+        if (!data.contains(time))
+          data.put(time, mutable.Map[String, mutable.Seq[Car]]())
+        if (!data(time).contains(stName))
+          data(time).put(stName, mutable.Seq[Car]())
+        data(time)(stName) :+= new Car(carId, itinerary.maxCapacity, stName, this)
+      }
+    }
+
+    data
+
+  }
 
   private def loadPassengers(): mutable.Map[String, mutable.Map[String, mutable.Seq[Passenger]]] = {
 

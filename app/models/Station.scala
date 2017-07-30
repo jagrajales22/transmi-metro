@@ -11,7 +11,6 @@ class Station(val name: String, hub: Boolean, tm: TransmiMetro) {
     passengers ++= arrivedPassengers
 
     for (car <- arrivedCars) {
-      car.update(time)
       val available = car.availableSeats()
       val num = Math.min(passengers.size, available)
       val boardingPassengers = (1 to num).map(_ => passengers.dequeue())

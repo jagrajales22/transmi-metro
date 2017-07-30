@@ -10,10 +10,6 @@ class Schedule {
   val schedule: mutable.Map[Int, mutable.Map[String, CarItinerary]] =
     mutable.Map[Int, mutable.Map[String, CarItinerary]]().withDefaultValue(mutable.Map[String, CarItinerary]())
 
-  def getCarStop(car: Car, time: String): CarItinerary = {
-    schedule(car.id)(time)
-  }
-
   def readSchedule(): Schedule = {
 
     val rows = ArrayBuffer[Array[String]]()
@@ -39,8 +35,8 @@ class Schedule {
   // private helpers
 
   def addCarItinerary(carId: Int, maxCapacity: Int, time: String, departure: String, destination: String): Unit = {
-    val stop = new CarItinerary(carId, maxCapacity, time, departure, destination)
-    schedule(carId).put(time, stop)
+    val itinerary = new CarItinerary(carId, maxCapacity, time, departure, destination)
+    schedule(carId).put(time, itinerary)
   }
 
   def using[A <: {def close() : Unit}, B](resource: A)(f: A => B): B = {
