@@ -5,6 +5,7 @@ import scala.collection.mutable
 object TransmiMetro {
   val DATA_PATH: String = "./data/"
 }
+
 class TransmiMetro {
 
   val schedule: Schedule = new Schedule().readSchedule()
@@ -49,9 +50,27 @@ class TransmiMetro {
     log(time)(station).put(stat, current + num)
   }
 
+  // private helpers
+
   private def loadPassengers(): mutable.Map[String, mutable.Map[String, mutable.Seq[Passenger]]] = {
-    // ToDo
-    null
+
+    val dataReader = new DataReader()
+    val data = mutable.Map[String, mutable.Map[String, mutable.Seq[Passenger]]]()
+
+    for (station <- stations) {
+      val stName = station.name
+      for (passenger <- dataReader.getPassengers(stName)) {
+        val time = passenger.time
+        if (!data.contains(time))
+          data.put(time, mutable.Map[String, mutable.Seq[Passenger]]())
+        if (!data(time).contains(stName))
+          data(time).put(stName, mutable.Seq[Passenger]())
+        data(time)(stName) :+= passenger
+      }
+    }
+
+    data
+
   }
 
 }

@@ -10,13 +10,13 @@ class Station(val name: String, hub: Boolean, tm: TransmiMetro) {
 
     passengers ++= arrivedPassengers
 
-    arrivedCars.foreach(car => {
+    for (car <- arrivedCars) {
       car.update(time)
       val available = car.availableSeats()
       val num = Math.min(passengers.size, available)
       val boardingPassengers = (1 to num).map(_ => passengers.dequeue())
       car.simulate(time, boardingPassengers)
-    })
+    }
 
     tm.log(time, name, "arrivals", arrivedPassengers.size)
 
