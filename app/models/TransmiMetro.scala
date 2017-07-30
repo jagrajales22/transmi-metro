@@ -53,7 +53,7 @@ class TransmiMetro {
 
   private def loadCars(): mutable.Map[String, mutable.Map[String, mutable.Seq[Car]]] = {
 
-    val schedule: Schedule = new Schedule().readSchedule()
+    val schedule = new Schedule().readSchedule()
     val data = mutable.Map[String, mutable.Map[String, mutable.Seq[Car]]]()
 
     for ((carId: Int, record: Map[String, CarItinerary]) <- schedule) {
