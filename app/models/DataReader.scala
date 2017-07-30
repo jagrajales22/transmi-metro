@@ -1,6 +1,8 @@
 package models
 
 import java.io.File
+
+import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 
@@ -26,7 +28,7 @@ class DataReader {
   def getPassengers(station: String): List[Passenger] = {
 
     val rows = ArrayBuffer[Array[String]]()
-    var passengers = List[Passenger]()
+    val passengers = mutable.Buffer[Passenger]()
 
     using(Source.fromFile(stations_dir + "/" + station + ".csv")) { source =>
       for (line <- source.getLines.drop(1)) {
@@ -38,16 +40,17 @@ class DataReader {
       val passengerId = row(0).toInt
       val time = row(1)
       val destination = row(2)
-      passengers = new Passenger(passengerId, time, destination) +: passengers
+      passengers.append(new Passenger(passengerId, time, destination))
     }
 
-    passengers
+    passengers.toList
 
   }
 
   // private helpers
 
-  private def using[A <: {def close() : Unit}, B](resource: A)(f: A => B): B = {
+  private def using[A <: {def close(): Unit @SuppressWarnings("unused") }, B]
+  (resource: A)(f: A => B): B = {
     try {
       f(resource)
     } finally {

@@ -4,6 +4,7 @@ import scala.collection.mutable
 
 class Station(val name: String, hub: Boolean, tm: TransmiMetro) {
 
+  // passengers in this station waiting to board cars, in FIFO order
   val passengers: mutable.Queue[Passenger] = mutable.Queue[Passenger]()
 
   def simulate(time: String, arrivedCars: List[Int], arrivedPassengers: List[Passenger]): Unit = {
