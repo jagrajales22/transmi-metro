@@ -17,7 +17,7 @@ class Schedule {
   def readSchedule(): Schedule = {
 
     val rows = ArrayBuffer[Array[String]]()
-    using(Source.fromFile("./data/schedules.csv")) { source =>
+    using(Source.fromFile(TransmiMetro.DATA_PATH + "schedules.csv")) { source =>
       for (line <- source.getLines.drop(1)) {
         rows += line.split(",").map(_.trim)
       }

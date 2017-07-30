@@ -2,6 +2,9 @@ package models
 
 import scala.collection.mutable
 
+object TransmiMetro {
+  val DATA_PATH: String = "./data/"
+}
 class TransmiMetro {
 
   val schedule: Schedule = new Schedule().readSchedule()

@@ -6,22 +6,21 @@ import scala.io.Source
 
 class DataReader {
 
-  val stations_dir = "/Users/jorgegrajales/Repos/transmi-metro/data/stations"
+  val stations_dir: String = TransmiMetro.DATA_PATH + "stations"
 
-  def getStationList(): List[String] = {
-
+  def getStationList: List[String] = {
     def getListOfFiles(dir: String): List[File] = {
       val d = new File(dir)
       if (d.exists && d.isDirectory) {
-        (d.listFiles.filter(_.isFile)).toList
+        d.listFiles.filter(_.isFile).toList
       } else {
         List[File]()
       }
     }
-
-    getListOfFiles(stations_dir).map(x => x.toString)
-      .map(x => x.substring(0, x.lastIndexOf('.'))).map(x => x.substring(x.lastIndexOf("/") + 1))
-
+    getListOfFiles(stations_dir)
+      .map(x => x.toString)
+      .map(x => x.substring(0, x.lastIndexOf('.')))
+      .map(x => x.substring(x.lastIndexOf("/") + 1))
   }
 
   def getPassengers(station: String): List[Passenger] = {
