@@ -4,7 +4,7 @@ import scala.collection.mutable
 
 class TransmiMetro {
 
-  val schedule: Schedule = new Schedule()
+  val schedule: Schedule = new Schedule().readSchedule()
 
   // { time => { station => { arrivals: n, departures: m } } }
   val log: mutable.Map[String, mutable.Map[String, mutable.Map[String, Int]]] =
@@ -28,10 +28,6 @@ class TransmiMetro {
       new Station("Calle 63", false, this),
       new Station("Calle 72", true, this),
     )
-
-  def start(): Unit = {
-    schedule.readSchedule()
-  }
 
   def getCarStop(car: Car, time: String): CarStop = {
     schedule.getCarStop(car, time)

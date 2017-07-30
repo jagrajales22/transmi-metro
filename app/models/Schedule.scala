@@ -14,7 +14,7 @@ class Schedule {
     schedule(car.id)(time)
   }
 
-  def readSchedule() {
+  def readSchedule(): Schedule = {
 
     val rows = ArrayBuffer[Array[String]]()
     using(Source.fromFile("./data/schedules.csv")) { source =>
@@ -31,6 +31,8 @@ class Schedule {
       val destination = row(1)
       addCarStop(carId, maxCapacity, time, departure, destination)
     }
+
+    this
 
   }
 
