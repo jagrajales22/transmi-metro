@@ -6,6 +6,10 @@ class TransmiMetro {
 
   val schedule: Schedule = new Schedule().readSchedule()
 
+  // { time => { station => [passengers] } }
+  val passengers: mutable.Map[String, mutable.Map[String, mutable.Seq[Passenger]]] =
+    loadPassengers()
+
   // { time => { station => { arrivals: n, departures: m } } }
   val log: mutable.Map[String, mutable.Map[String, mutable.Map[String, Int]]] =
     mutable.Map[String, mutable.Map[String, mutable.Map[String, Int]]]()
@@ -33,13 +37,18 @@ class TransmiMetro {
     schedule.getCarStop(car, time)
   }
 
-  def log(time: String, station: String, stat: String, num: Int) = {
+  def log(time: String, station: String, stat: String, num: Int): Unit = {
     if (!log.contains(time))
       log.put(time, mutable.Map[String, mutable.Map[String, Int]]())
     if (!log(time).contains(station))
       log(time).put(station, mutable.Map("arrivals" -> 0, "departures" -> 0))
     val current = log(time)(station)(stat)
     log(time)(station).put(stat, current + num)
+  }
+
+  private def loadPassengers(): mutable.Map[String, mutable.Map[String, mutable.Seq[Passenger]]] = {
+    // ToDo
+    null
   }
 
 }
