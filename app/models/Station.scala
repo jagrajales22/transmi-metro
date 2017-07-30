@@ -18,7 +18,7 @@ class Station(val name: String, hub: Boolean, tm: TransmiMetro) {
       car.simulate(time, boardingPassengers)
     })
 
-    tm.logCars(time, arrivedCars.size)
+    tm.log(time, name, "arrivals", arrivedPassengers.size)
 
   }
 

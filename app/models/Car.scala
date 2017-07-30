@@ -11,15 +11,19 @@ class Car(val id: Int, val capacity: Int, var current: String, tm: TransmiMetro)
   // pre: the arrived list fits int car's capacity
   // pre: `current` was updated with the station the car is currently in
   def simulate(time: String, boardingPassengers: Iterable[Passenger]): Unit = {
+
+    val departures = passengers.count(_.destination == current)
+    tm.log(time, current, "departures", departures)
+
     passengers = passengers.filter(_.destination != current)
     passengers ++= boardingPassengers
-    tm.logPassengers(time, passengers.size)
+
   }
 
   // pre: `current` was updated with the station the car is currently in
   def availableSeats(): Int = {
-    val numLeaving = passengers.count(_.destination == current)
-    capacity - numLeaving
+    val departures = passengers.count(_.destination == current)
+    capacity - departures
   }
 
 }
