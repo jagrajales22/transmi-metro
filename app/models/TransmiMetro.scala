@@ -8,8 +8,6 @@ object TransmiMetro {
 
 class TransmiMetro {
 
-  val schedule: Schedule = new Schedule().readSchedule()
-
   // { time => { station => [passengers] } }
   val passengers: mutable.Map[String, mutable.Map[String, mutable.Seq[Passenger]]] =
     loadPassengers()
@@ -18,6 +16,10 @@ class TransmiMetro {
   val log: mutable.Map[String, mutable.Map[String, mutable.Map[String, Int]]] =
     mutable.Map[String, mutable.Map[String, mutable.Map[String, Int]]]()
 
+  // { car_id => { time, itinerary } }
+  val schedule: Schedule = new Schedule().readSchedule()
+
+  // list of available stations
   val stations: Seq[Station] =
     Seq[Station](
       new Station("Portal Americas", true, this),
@@ -37,7 +39,7 @@ class TransmiMetro {
       new Station("Calle 72", true, this),
     )
 
-  def getCarStop(car: Car, time: String): CarStop = {
+  def getCarStop(car: Car, time: String): CarItinerary = {
     schedule.getCarStop(car, time)
   }
 

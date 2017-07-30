@@ -6,11 +6,11 @@ import scala.io.Source
 
 class Schedule {
 
-  // { carId => { departureTime, CarStop } }
-  val schedule: mutable.Map[Int, mutable.Map[String, CarStop]] =
-    mutable.Map[Int, mutable.Map[String, CarStop]]().withDefaultValue(mutable.Map[String, CarStop]())
+  // { car_id => { time, itinerary } }
+  val schedule: mutable.Map[Int, mutable.Map[String, CarItinerary]] =
+    mutable.Map[Int, mutable.Map[String, CarItinerary]]().withDefaultValue(mutable.Map[String, CarItinerary]())
 
-  def getCarStop(car: Car, time: String): CarStop = {
+  def getCarStop(car: Car, time: String): CarItinerary = {
     schedule(car.id)(time)
   }
 
@@ -29,7 +29,7 @@ class Schedule {
       val time = row(3)
       val departure = row(4)
       val destination = row(1)
-      addCarStop(carId, maxCapacity, time, departure, destination)
+      addCarItinerary(carId, maxCapacity, time, departure, destination)
     }
 
     this
@@ -38,8 +38,8 @@ class Schedule {
 
   // private helpers
 
-  def addCarStop(carId: Int, maxCapacity: Int, time: String, departure: String, destination: String): Unit = {
-    val stop = new CarStop(carId, maxCapacity, time, departure, destination)
+  def addCarItinerary(carId: Int, maxCapacity: Int, time: String, departure: String, destination: String): Unit = {
+    val stop = new CarItinerary(carId, maxCapacity, time, departure, destination)
     schedule(carId).put(time, stop)
   }
 
@@ -53,5 +53,5 @@ class Schedule {
 
 }
 
-class CarStop(var carId: Int, var maxCapacity: Int, var time: String, var departure: String, var destination: String) {
+class CarItinerary(var carId: Int, var maxCapacity: Int, var time: String, var departure: String, var destination: String) {
 }
