@@ -1,10 +1,10 @@
 package models
 
-import scala.collection.mutable.Queue
+import scala.collection.mutable
 
 class Station(val name: String, hub: Boolean, tm: TransmiMetro) {
 
-  var passengers: Queue[Passenger] = Queue[Passenger]()
+  var passengers: mutable.Queue[Passenger] = mutable.Queue[Passenger]()
 
   def simulate(time: String, arrivedCars: List[Car], arrivedPassengers: List[Passenger]): Unit = {
 

@@ -10,11 +10,6 @@ class Schedule {
   val schedule: mutable.Map[Int, mutable.Map[String, CarStop]] =
     mutable.Map[Int, mutable.Map[String, CarStop]]().withDefaultValue(mutable.Map[String, CarStop]())
 
-  def addCarStop(carId: Int, maxCapacity: Int, time: String, departure: String, destination: String): Unit = {
-    val stop = new CarStop(carId, maxCapacity, time, departure, destination)
-    schedule(carId).put(time, stop)
-  }
-
   def getCarStop(car: Car, time: String): CarStop = {
     schedule(car.id)(time)
   }
@@ -37,13 +32,21 @@ class Schedule {
       addCarStop(carId, maxCapacity, time, departure, destination)
     }
 
-    def using[A <: {def close() : Unit}, B](resource: A)(f: A => B): B =
-      try {
-        f(resource)
-      } finally {
-        resource.close()
-      }
+  }
 
+  // private helpers
+
+  def addCarStop(carId: Int, maxCapacity: Int, time: String, departure: String, destination: String): Unit = {
+    val stop = new CarStop(carId, maxCapacity, time, departure, destination)
+    schedule(carId).put(time, stop)
+  }
+
+  def using[A <: {def close() : Unit}, B](resource: A)(f: A => B): B = {
+    try {
+      f(resource)
+    } finally {
+      resource.close()
+    }
   }
 
 }
