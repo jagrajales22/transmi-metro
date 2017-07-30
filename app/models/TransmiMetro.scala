@@ -11,9 +11,12 @@ object TransmiMetro {
 
 class TransmiMetro {
 
-  // { time => { station, [cars] } }
-  val cars: mutable.Map[String, mutable.Map[String, mutable.Buffer[Car]]] =
-    loadCars()
+  // { time => { station, [car_ids] } }
+  val carPositions: mutable.Map[String, mutable.Map[String, mutable.Buffer[Int]]] =
+    loadCarPositions()
+
+  // { car_id => car }
+  val cars: mutable.Map[Int, Car] = mutable.Map[Int, Car]()
 
   // { time => { station => [passengers] } }
   val passengers: mutable.Map[String, mutable.Map[String, mutable.Buffer[Passenger]]] =
@@ -52,21 +55,27 @@ class TransmiMetro {
     log(time)(station).put(stat, current + num)
   }
 
+  def getCar(carId: Int): Car = cars(carId)
+
   // private helpers
 
-  private def loadCars(): mutable.Map[String, mutable.Map[String, mutable.Buffer[Car]]] = {
+  private def loadCarPositions(): mutable.Map[String, mutable.Map[String, mutable.Buffer[Int]]] = {
 
     val schedule = new Schedule().readSchedule()
-    val data = mutable.Map[String, mutable.Map[String, mutable.Buffer[Car]]]()
+    val data = mutable.Map[String, mutable.Map[String, mutable.Buffer[Int]]]()
 
     for ((carId: Int, record: Map[String, CarItinerary]) <- schedule) {
       for ((time: String, itinerary: CarItinerary) <- record) {
         val stName = itinerary.departure
         if (!data.contains(time))
-          data.put(time, mutable.Map[String, mutable.Buffer[Car]]())
+          data.put(time, mutable.Map[String, mutable.Buffer[Int]]())
         if (!data(time).contains(stName))
-          data(time).put(stName, mutable.Buffer[Car]())
-        data(time)(stName).append(new Car(carId, itinerary.maxCapacity, stName, this))
+          data(time).put(stName, mutable.Buffer[Int]())
+        data(time)(stName).append(carId)
+        // assume that the first occurrence of a car in the schedule
+        // indicates its capacity and its starting station
+        if (!cars.contains(carId))
+          cars.put(carId, new Car(carId, itinerary.maxCapacity, stName, this))
       }
     }
 
