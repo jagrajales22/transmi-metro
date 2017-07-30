@@ -4,6 +4,9 @@ import scala.collection.mutable
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 
+class CarItinerary(var carId: Int, var maxCapacity: Int, var time: String, var departure: String, var destination: String) {
+}
+
 class Schedule {
 
   // { car_id => { time, itinerary } }
@@ -34,12 +37,13 @@ class Schedule {
 
   // private helpers
 
-  def addCarItinerary(carId: Int, maxCapacity: Int, time: String, departure: String, destination: String): Unit = {
+  private def addCarItinerary(carId: Int, maxCapacity: Int, time: String, departure: String, destination: String): Unit = {
     val itinerary = new CarItinerary(carId, maxCapacity, time, departure, destination)
     schedule(carId).put(time, itinerary)
   }
 
-  def using[A <: {def close() : Unit}, B](resource: A)(f: A => B): B = {
+  private def using[A <: {def close(): Unit @SuppressWarnings("unused") }, B]
+  (resource: A)(f: A => B): B = {
     try {
       f(resource)
     } finally {
@@ -47,7 +51,4 @@ class Schedule {
     }
   }
 
-}
-
-class CarItinerary(var carId: Int, var maxCapacity: Int, var time: String, var departure: String, var destination: String) {
 }

@@ -11,12 +11,12 @@ object TransmiMetro {
 
 class TransmiMetro {
 
+  // { car_id => car }
+  val cars: mutable.Map[Int, Car] = mutable.Map[Int, Car]()
+
   // { time => { station, [car_ids] } }
   val carPositions: mutable.Map[String, mutable.Map[String, mutable.Buffer[Int]]] =
     loadCarPositions()
-
-  // { car_id => car }
-  val cars: mutable.Map[Int, Car] = mutable.Map[Int, Car]()
 
   // { time => { station => [passengers] } }
   val passengers: mutable.Map[String, mutable.Map[String, mutable.Buffer[Passenger]]] =
@@ -27,8 +27,8 @@ class TransmiMetro {
     mutable.Map[String, mutable.Map[String, mutable.Map[String, Int]]]()
 
   // list of available stations
-  val stations: Seq[Station] =
-    Seq[Station](
+  val stations: List[Station] =
+    List[Station](
       new Station("Portal Americas", true, this),
       new Station("Calle 42 sur", false, this),
       new Station("Carrera 80", false, this),
@@ -43,8 +43,9 @@ class TransmiMetro {
       new Station("Calle 26", false, this),
       new Station("Calle 45", false, this),
       new Station("Calle 63", false, this),
-      new Station("Calle 72", true, this),
-    )
+      new Station("Calle 72", true, this))
+
+  def getCar(carId: Int): Car = cars(carId)
 
   def log(time: String, station: String, stat: String, num: Int): Unit = {
     if (!log.contains(time))
@@ -55,9 +56,43 @@ class TransmiMetro {
     log(time)(station).put(stat, current + num)
   }
 
-  def getCar(carId: Int): Car = cars(carId)
+  def simulate(): Unit = {
+
+    var time = "0400"
+    val endTime = "0000"
+
+    while (time != endTime) {
+
+      for (station <- stations) {
+        val stName = station.name
+        val carPos = getCarPositions(time, stName)
+        val boarding = getPassengers(time, stName)
+        station.simulate(time, carPos, boarding)
+      }
+
+      time = nextTimeFromString(time)
+
+    }
+
+  }
 
   // private helpers
+
+  private def getCarPositions(time: String, station: String): List[Int] = {
+    try {
+      carPositions(time)(station).toList
+    } catch {
+      case _: Exception => List[Int]()
+    }
+  }
+
+  private def getPassengers(time: String, station: String): List[Passenger] = {
+    try {
+      passengers(time)(station).toList
+    } catch {
+      case _: Exception => List[Passenger]()
+    }
+  }
 
   private def loadCarPositions(): mutable.Map[String, mutable.Map[String, mutable.Buffer[Int]]] = {
 
@@ -104,17 +139,10 @@ class TransmiMetro {
 
   }
 
-  def nextTimeFromString(time: String): String = {
+  private def nextTimeFromString(time: String): String = {
     val formatter = DateTimeFormat.forPattern("HHmm")
     val dat = formatter.parseDateTime(time)
     val next = dat.plus(Period.minutes(1))
-    next.toString("HHmm")
-  }
-
-  def prevTimeFromString(time: String): String = {
-    val formatter = DateTimeFormat.forPattern("HHmm")
-    val dat = formatter.parseDateTime(time)
-    val next = dat.minus(Period.minutes(1))
     next.toString("HHmm")
   }
 
