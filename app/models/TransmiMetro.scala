@@ -12,11 +12,11 @@ object TransmiMetro {
 class TransmiMetro {
 
   // { time => { station, [cars] } }
-  val cars: mutable.Map[String, mutable.Map[String, mutable.Seq[Car]]] =
+  val cars: mutable.Map[String, mutable.Map[String, mutable.Buffer[Car]]] =
     loadCars()
 
   // { time => { station => [passengers] } }
-  val passengers: mutable.Map[String, mutable.Map[String, mutable.Seq[Passenger]]] =
+  val passengers: mutable.Map[String, mutable.Map[String, mutable.Buffer[Passenger]]] =
     loadPassengers()
 
   // { time => { station => { arrivals: n, departures: m } } }
@@ -54,19 +54,19 @@ class TransmiMetro {
 
   // private helpers
 
-  private def loadCars(): mutable.Map[String, mutable.Map[String, mutable.Seq[Car]]] = {
+  private def loadCars(): mutable.Map[String, mutable.Map[String, mutable.Buffer[Car]]] = {
 
     val schedule = new Schedule().readSchedule()
-    val data = mutable.Map[String, mutable.Map[String, mutable.Seq[Car]]]()
+    val data = mutable.Map[String, mutable.Map[String, mutable.Buffer[Car]]]()
 
     for ((carId: Int, record: Map[String, CarItinerary]) <- schedule) {
       for ((time: String, itinerary: CarItinerary) <- record) {
         val stName = itinerary.departure
         if (!data.contains(time))
-          data.put(time, mutable.Map[String, mutable.Seq[Car]]())
+          data.put(time, mutable.Map[String, mutable.Buffer[Car]]())
         if (!data(time).contains(stName))
-          data(time).put(stName, mutable.Seq[Car]())
-        data(time)(stName) :+= new Car(carId, itinerary.maxCapacity, stName, this)
+          data(time).put(stName, mutable.Buffer[Car]())
+        data(time)(stName).append(new Car(carId, itinerary.maxCapacity, stName, this))
       }
     }
 
@@ -74,20 +74,20 @@ class TransmiMetro {
 
   }
 
-  private def loadPassengers(): mutable.Map[String, mutable.Map[String, mutable.Seq[Passenger]]] = {
+  private def loadPassengers(): mutable.Map[String, mutable.Map[String, mutable.Buffer[Passenger]]] = {
 
     val dataReader = new DataReader()
-    val data = mutable.Map[String, mutable.Map[String, mutable.Seq[Passenger]]]()
+    val data = mutable.Map[String, mutable.Map[String, mutable.Buffer[Passenger]]]()
 
     for (station <- stations) {
       val stName = station.name
       for (passenger <- dataReader.getPassengers(stName)) {
         val time = passenger.time
         if (!data.contains(time))
-          data.put(time, mutable.Map[String, mutable.Seq[Passenger]]())
+          data.put(time, mutable.Map[String, mutable.Buffer[Passenger]]())
         if (!data(time).contains(stName))
-          data(time).put(stName, mutable.Seq[Passenger]())
-        data(time)(stName) :+= passenger
+          data(time).put(stName, mutable.Buffer[Passenger]())
+        data(time)(stName).append(passenger)
       }
     }
 
@@ -95,20 +95,18 @@ class TransmiMetro {
 
   }
 
-  def nextTimeFromString(time: String): String ={
+  def nextTimeFromString(time: String): String = {
     val formatter = DateTimeFormat.forPattern("HHmm")
     val dat = formatter.parseDateTime(time)
     val next = dat.plus(Period.minutes(1))
-    return next.toString("HHmm")
+    next.toString("HHmm")
   }
 
-  def lastTimeFromString(time: String): String ={
+  def prevTimeFromString(time: String): String = {
     val formatter = DateTimeFormat.forPattern("HHmm")
     val dat = formatter.parseDateTime(time)
     val next = dat.minus(Period.minutes(1))
-    return next.toString("HHmm")
+    next.toString("HHmm")
   }
-
-
 
 }
