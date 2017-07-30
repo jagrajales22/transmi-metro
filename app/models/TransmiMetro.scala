@@ -1,5 +1,8 @@
 package models
 
+import org.joda.time.Period
+import org.joda.time.format.DateTimeFormat
+
 import scala.collection.mutable
 
 object TransmiMetro {
@@ -91,5 +94,21 @@ class TransmiMetro {
     data
 
   }
+
+  def nextTimeFromString(time: String): String ={
+    val formatter = DateTimeFormat.forPattern("HHmm")
+    val dat = formatter.parseDateTime(time)
+    val next = dat.plus(Period.minutes(1))
+    return next.toString("HHmm")
+  }
+
+  def lastTimeFromString(time: String): String ={
+    val formatter = DateTimeFormat.forPattern("HHmm")
+    val dat = formatter.parseDateTime(time)
+    val next = dat.minus(Period.minutes(1))
+    return next.toString("HHmm")
+  }
+
+
 
 }
