@@ -4,7 +4,7 @@ import java.io.File
 import scala.collection.mutable.ArrayBuffer
 import scala.io.Source
 
-class Simulator {
+class DataReader {
 
   val stations_dir = "/Users/jorgegrajales/Repos/transmi-metro/data/stations"
 
@@ -39,7 +39,7 @@ class Simulator {
       val passengerId = row(0).toInt
       val time = row(1)
       val destination = row(2)
-      passengers = new Passenger(passengerId, destination) +: passengers
+      passengers = new Passenger(passengerId, time, destination) +: passengers
     }
 
     passengers
