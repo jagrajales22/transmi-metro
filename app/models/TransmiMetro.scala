@@ -13,6 +13,8 @@ object TransmiMetro {
 
 class TransmiMetro {
 
+  // data structures for storing the info read from the files in ./data/
+
   // { car_id => car }
   val cars: mutable.Map[Int, Car] = mutable.Map[Int, Car]()
 
@@ -47,8 +49,14 @@ class TransmiMetro {
       new Station("Calle 63", false, this),
       new Station("Calle 72", true, this))
 
+  // current simulation time
+  var currentTime: String = "0400"
+
+  // obtain a car given its id
   def getCar(carId: Int): Car = cars(carId)
 
+  // log system events every minute, the values
+  // accumulated are: arrivals, departures, density
   def log(time: String, station: String, stat: String, num: Int): Unit = {
     if (!log.contains(time))
       log.put(time, mutable.Map[String, mutable.Map[String, Int]]())
@@ -59,12 +67,24 @@ class TransmiMetro {
     log(time)(station).put(stat, current + num)
   }
 
+  // obtain measures for the current time
+  def getCurrentMeasures(station: String): Map[String, Int] = {
+    try {
+      log(currentTime)(station).toMap
+    } catch {
+      case _: Exception => Map("arrivals" -> 0, "departures" -> 0, "density" -> 0)
+    }
+  }
+
+  // simulate a day in TransmiMetro, from 04:00 to 00:00
+  // every minute we read from the observers indicating
+  // where the cars and passengers are
   def simulate(): Unit = {
 
-    var time = "0400"
+    currentTime = "0400"
     val endTime = "0000"
 
-    while (time != endTime) {
+    while (currentTime != endTime) {
 
       // simulate 1-minute updates with a 1-second sleep
       Thread.sleep(1000)
@@ -72,26 +92,32 @@ class TransmiMetro {
       for (station <- stations) {
         val stName = station.name
         // reactive car observer
-        val carPos = getCarPositions(time, stName)
+        val carPos = getCarPositions(currentTime, stName)
         // reactive passenger observer
-        val boarding = getPassengers(time, stName)
-        station.simulate(time, carPos, boarding)
+        val boarding = getPassengers(currentTime, stName)
+        station.simulate(currentTime, carPos, boarding)
       }
 
-      time = nextTimeFromString(time)
+      currentTime = nextTimeFromString(currentTime)
 
     }
 
   }
 
+  // generate a density report in 10-minute intervals for the
+  // given station, the result is in the form { time => measure }
   def reportDensity(station: String): Map[String, Int] = {
     generateReport(station, "density")
   }
 
+  // generate an arrivals report in 10-minute intervals for the
+  // given station, the result is in the form { time => measure }
   def reportArrivals(station: String): Map[String, Int] = {
     generateReport(station, "arrivals")
   }
 
+  // generate a departures report in 10-minute intervals for the
+  // given station, the result is in the form { time => measure }
   def reportDepartures(station: String): Map[String, Int] = {
     generateReport(station, "departures")
   }
