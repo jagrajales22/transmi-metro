@@ -18,4 +18,6 @@ class Car(val id: Int, val capacity: Int, var currentStation: String, tm: Transm
     passengers.size - departures
   }
 
+
+
 }

@@ -49,7 +49,7 @@ class DataReader {
 
   // private helpers
 
-  private def using[A <: {def close(): Unit @SuppressWarnings("unused") }, B]
+  private def using[A <: {def close(): Unit}, B]
   (resource: A)(f: A => B): B = {
     try {
       f(resource)
