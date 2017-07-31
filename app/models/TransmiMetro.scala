@@ -76,31 +76,41 @@ class TransmiMetro {
     }
   }
 
-  // simulate a day in TransmiMetro, from 04:00 to 00:00
-  // every minute we read from the observers indicating
-  // where the cars and passengers are
-  def simulate(): Unit = {
+  // simulate a day in TransmiMetro, from 04:00 to 00:00; every minute we
+  // read from the observers indicating where the cars and passengers are,
+  // we return an Observable with the state for the current time, using the
+  // following format: { station => { arrivals: n, departures: m, density: p } }
+  def simulate(): Observable[mutable.Map[String, mutable.Map[String, Int]]] = {
 
-    currentTime = "0400"
-    val endTime = "0000"
+    Observable(subscriber => {
 
-    while (currentTime != endTime) {
+      currentTime = "0400"
+      val endTime = "0000"
 
-      // simulate 1-minute updates with a 1-second sleep
-      Thread.sleep(1000)
+      while (currentTime != endTime) {
 
-      for (station <- stations) {
-        val stName = station.name
-        // reactive car observer
-        val carPos = getCarPositions(currentTime, stName)
-        // reactive passenger observer
-        val boarding = getPassengers(currentTime, stName)
-        station.simulate(currentTime, carPos, boarding)
+        // simulate 1-minute updates with a 1-second sleep
+        Thread.sleep(1000)
+
+        for (station <- stations) {
+          val stName = station.name
+          // reactive car observer
+          val carPos = getCarPositions(currentTime, stName)
+          // reactive passenger observer
+          val boarding = getPassengers(currentTime, stName)
+          station.simulate(currentTime, carPos, boarding)
+        }
+
+        subscriber.onNext(log(currentTime))
+        currentTime = nextTimeFromString(currentTime)
+
       }
 
-      currentTime = nextTimeFromString(currentTime)
+      if (!subscriber.isUnsubscribed) {
+        subscriber.onCompleted()
+      }
 
-    }
+    })
 
   }
 
