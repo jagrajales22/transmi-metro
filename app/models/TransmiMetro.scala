@@ -202,7 +202,7 @@ class TransmiMetro {
     var data = 0
     var time = "0400"
     val endTime = "0000"
-    var stat = mutable.Map[String, Int]()
+    var stat = Map[String, Int]()
 
     while (time != endTime) {
 
