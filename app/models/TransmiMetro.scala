@@ -2,6 +2,7 @@ package models
 
 import org.joda.time.Period
 import org.joda.time.format.DateTimeFormat
+import rx.lang.scala.Observable
 
 import scala.collection.mutable
 
@@ -78,19 +79,19 @@ class TransmiMetro {
 
   // private helpers
 
-  private def getCarPositions(time: String, station: String): List[Int] = {
+  private def getCarPositions(time: String, station: String): Observable[Int] = {
     try {
-      carPositions(time)(station).toList
+      requestCar(carPositions(time)(station).toList)
     } catch {
-      case _: Exception => List[Int]()
+      case _: Exception => requestCar(List[Int]())
     }
   }
 
-  private def getPassengers(time: String, station: String): List[Passenger] = {
+  private def getPassengers(time: String, station: String): Observable[Passenger] = {
     try {
-      passengers(time)(station).toList
+      requestPassenger(passengers(time)(station).toList)
     } catch {
-      case _: Exception => List[Passenger]()
+      case _: Exception => requestPassenger(List[Passenger]())
     }
   }
 
@@ -144,6 +145,40 @@ class TransmiMetro {
     val dat = formatter.parseDateTime(time)
     val next = dat.plus(Period.minutes(1))
     next.toString("HHmm")
+  }
+
+  def requestPassenger(passengers: List[Passenger]): Observable[Passenger] = {
+
+    Observable(subscriber => {
+
+      for (passenger <- passengers) {
+        if (!subscriber.isUnsubscribed) {
+          subscriber.onNext(passenger)
+        }
+      }
+      if (!subscriber.isUnsubscribed) {
+        subscriber.onCompleted()
+      }
+
+    })
+
+  }
+
+  def requestCar(cars: List[Int]): Observable[Int] = {
+
+    Observable(subscriber => {
+
+      for (car <- cars) {
+        if (!subscriber.isUnsubscribed) {
+          subscriber.onNext(car)
+        }
+      }
+      if (!subscriber.isUnsubscribed) {
+        subscriber.onCompleted()
+      }
+
+    })
+
   }
 
 }
