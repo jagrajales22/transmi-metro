@@ -13,7 +13,6 @@ class Station(val name: String, hub: Boolean, tm: TransmiMetro) {
 
     var passList = List[Passenger]()
     arrivedPassengers.subscribe(passenger => passList :+= passenger)
-
     passengers.enqueue(passList: _*)
 
     arrivedCars.subscribe(carId => {
@@ -26,6 +25,7 @@ class Station(val name: String, hub: Boolean, tm: TransmiMetro) {
     })
 
     tm.log(time, name, "arrivals", passList.size)
+    tm.log(time, name, "density", passengers.size)
 
   }
 
